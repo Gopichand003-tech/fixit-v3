@@ -1,80 +1,97 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Phone,
-  CheckCircle2,
-  ChevronRight,
-  ChevronLeft,
-  Briefcase,
-  FileText,
-  CreditCard,
-} from "lucide-react";
+import { CheckCircle2, UploadCloud, ArrowLeft, ArrowRight } from "lucide-react";
 
-const SERVICES = ["Mechanic", "Plumber", "Electrician", "Painter", "Carpenter", "Cleaner", "Technician"];
+const SERVICES = [
+  "Electronics",
+  "Plumbing",
+  "Painting",
+  "Electrician",
+  "Mechanic",
+  "Cleaning",
+  "Landscaping",
+  "TechSupport",
+  "Photography",
+  "Carpenter",
+  "Junk Removal",
+  "Bodycare",
+  "Catering",
+  "Fitness Trainer",
+  "MusicTeacher",
+  "Tutoring",
+  "Personal Shopper",
+  "Business Consulting",
+  "Healthcare",
+  "Babysitting",
+  "Pet Care",
+  "AC Repair",
+  "Event Planning",
+  "Transport Service",
+  "Industrial Services"
+];
 
-const LOCATIONS = [
+const LOCATIONS =[
   "Visakhapatnam",
   "Vijayawada",
   "Guntur",
-  "Tirupati",
   "Nellore",
+  "Tirupati",
   "Kurnool",
   "Rajahmundry",
   "Kakinada",
+  "Anantapur",
+  "Kadapa",
+  "Ongole",
   "Eluru",
-  "Anantapur"
+  "Vizianagaram",
+  "Machilipatnam",
+  "Chittoor",
+  "Hindupur",
+  "Proddatur",
+  "Tenali",
+  "Adoni",
+  "Nandyal"
 ];
+
 
 export default function BecomeProvider() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ moved inside component
-  const location = useLocation(); 
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
-    service: "",
-    location: "",
-    phone: "",
-    otp: "",
-    documents: {
-      photo: null,
-      aadhaar: null,
-      pancard: null,
-    },
-    paymentSuccess: false,
-  });
+  name: "",
+  service: "",
+  experience: "", // fixed typo & added value
+  location: "",
+  phone: "",
+  otp: "",
+  documents: { photo: null, aadhaar: null, pancard: null },
+  paymentSuccess: false,
+});
 
-  // Handle input changes
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleFileChange = (e) => setFormData({ ...formData, documents: { ...formData.documents, [e.target.name]: e.target.files[0] } });
 
-  // Handle file upload
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setFormData({ ...formData, documents: { ...formData.documents, [name]: files[0] } });
-  };
-
-  // Send OTP
+  // OTP Functions
   const sendOTP = async () => {
     if (!formData.phone) return alert("Enter phone number");
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/send-otp", { phone: formData.phone });
+      await axios.post("http://localhost:5000/api/otp/send-otp", { phone: formData.phone });
       alert("OTP sent!");
     } catch (err) {
       alert(err.response?.data?.message || "Failed to send OTP");
     }
     setLoading(false);
   };
-
-  // Verify OTP
   const verifyOTP = async () => {
     if (!formData.otp) return alert("Enter OTP");
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/verify-otp", { phone: formData.phone, otp: formData.otp });
+      await axios.post("http://localhost:5000/api/otp/verify-otp", { phone: formData.phone, otp: formData.otp });
       alert("OTP verified!");
       setStep(5);
     } catch (err) {
@@ -82,178 +99,219 @@ export default function BecomeProvider() {
     }
     setLoading(false);
   };
+const submitDocuments = async () => {
+  const data = new FormData();
 
-  // Submit provider data including documents
-  const submitDocuments = async () => {
-    const data = new FormData();
-    data.append("name", formData.name);
-    data.append("service", formData.service);
-    data.append("location", formData.location);
-    data.append("phone", formData.phone);
-    data.append("photo", formData.documents.photo);
-    data.append("aadhaar", formData.documents.aadhaar);
-    data.append("pancard", formData.documents.pancard);
+  // append required text fields
+  data.append("name", formData.name);
+  data.append("service", formData.service);
+  data.append("experience", formData.experience);
+  data.append("location", formData.location);
+  data.append("phone", formData.phone);
 
-    try {
-      await axios.post("http://localhost:5000/api/providers", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setStep(6);
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to upload documents");
-    }
-  };
+  // append files correctly (multer expects these keys)
+  if (formData.documents.photo) data.append("photo", formData.documents.photo);
+  if (formData.documents.aadhaar) data.append("aadhaar", formData.documents.aadhaar);
+  if (formData.documents.pancard) data.append("pancard", formData.documents.pancard);
 
-  // Dummy payment simulation
+  try {
+    await axios.post("http://localhost:5000/api/providers", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    setStep(6);
+  } catch (err) {
+    console.error("❌ Register error:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Failed to upload documents");
+  }
+};
+
   const handlePayment = () => {
-    // simulate payment success
     setFormData({ ...formData, paymentSuccess: true });
-    setStep(7);
+    setStep(7); 
   };
 
   const steps = [
-    { id: 1, title: "Personal Info" },
-    { id: 2, title: "Service Type" },
+    { id: 1, title: "Info" },
+    { id: 2, title: "Service"},
+     { id: 2, title: "experience"},
     { id: 3, title: "Location" },
-    { id: 4, title: "Phone Verification" },
-    { id: 5, title: "Upload Documents" },
-    { id: 6, title: "Membership Payment" },
+    { id: 4, title: "Verify" },
+    { id: 5, title: "Documents" },
+    { id: 6, title: "Payment" },
     { id: 7, title: "Done" },
   ];
 
+  
+
   return (
-    <div className="w-screen min-h-screen flex items-center justify-center p-6 bg-gray-50 overflow-x-hidden">
-      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-8">
-        {/* Step Indicator */}
-        <div className="flex justify-between mb-8">
-          {steps.map((s) => (
-            <div key={s.id} className="flex-1 flex flex-col items-center">
-              <div
-                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${
-                  step >= s.id ? "bg-green-400 border-green-400" : "border-gray-300"
-                }`}
-              >
-                {step > s.id ? "✓" : s.id}
-              </div>
-              <p className="text-xs mt-2 text-center">{s.title}</p>
-            </div>
-          ))}
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-indigo-50 to-blue-100 px-6">
+      
+      {/* Progress Bar */}
+      <div className="w-full max-w-2xl mb-6">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <motion.div
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${(step / steps.length) * 100}%` }}
+            transition={{ duration: 0.5 }}
+          />
         </div>
+        <p className="text-center mt-2 text-sm font-medium text-gray-600">
+          Step {step} of {steps.length}
+        </p>
+      </div>
 
+      {/* Form Card */}
+      <motion.div
+        key={step}
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -40, opacity: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-2xl bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8"
+      >
+        {/* Step Content */}
         <AnimatePresence mode="wait">
-          {/* Step 1: Personal Info */}
           {step === 1 && (
-            <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-2xl font-bold mb-4">Your Info</h2>
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 mb-4 rounded-lg border"
-              />
-              <button onClick={() => setStep(2)} className="w-full bg-blue-500 text-white py-3 rounded-lg">Next</button>
-            </motion.div>
+            <div>
+  <h2 className="text-2xl font-bold mb-4">Your Info</h2>
+
+  {/* Full Name */}
+  <input
+    type="text"
+    name="name"
+    placeholder="Full Name"
+    value={formData.name}
+    onChange={handleChange}
+    className="w-full px-4 py-3 mb-4 rounded-lg border focus:ring-2 focus:ring-blue-500"
+  />
+
+
+  <button
+    onClick={() => setStep(2)}
+    className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg hover:opacity-90"
+  >
+    Continue →
+  </button>
+</div>
+
           )}
 
-          {/* Step 2: Service Type */}
           {step === 2 && (
-            <motion.div key="step2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-2xl font-bold mb-4">Select Service</h2>
-              <select name="service" value={formData.service} onChange={handleChange} className="w-full px-4 py-3 mb-4 rounded-lg border">
-                <option value="">Select</option>
-                {SERVICES.map((srv) => <option key={srv}>{srv}</option>)}
-              </select>
-              <div className="flex justify-between">
-                <button onClick={() => setStep(1)} className="flex items-center gap-2">Back</button>
-                <button onClick={() => setStep(3)} className="bg-blue-500 text-white px-6 py-3 rounded-lg">Next</button>
-              </div>
-            </motion.div>
-          )}
+  <div>
+    <h2 className="text-2xl font-bold mb-4">Select Service & Experience</h2>
 
-          {/* Step 3: Location */}
-{step === 3 && (
-  <motion.div key="step3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-    <h2 className="text-2xl font-bold mb-4">Location</h2>
+    {/* Service Dropdown */}
     <select
-      name="location"
-      value={formData.location}
+      name="service"
+      value={formData.service}
       onChange={handleChange}
-      className="w-full px-4 py-3 mb-4 rounded-lg border"
+      className="w-full px-4 py-3 mb-6 rounded-lg border focus:ring-2 focus:ring-blue-500"
     >
-      <option value="">Select your city</option>
-      {LOCATIONS.map((loc) => (
-        <option key={loc} value={loc}>{loc}</option>
+      <option value="">Choose service...</option>
+      {SERVICES.map((srv) => (
+        <option key={srv} value={srv}>
+          {srv}
+        </option>
       ))}
     </select>
+
+    {/* Experience Input */}
+    <input
+      type="text"
+      name="experience"
+      placeholder="Enter your experience (e.g., 3 years)"
+      value={formData.experience}
+      onChange={handleChange}
+      className="w-full px-4 py-3 mb-6 rounded-lg border focus:ring-2 focus:ring-blue-500"
+    />
+
+    {/* Navigation Buttons */}
     <div className="flex justify-between">
-      <button onClick={() => setStep(2)} className="flex items-center gap-2">Back</button>
-      <button onClick={() => setStep(4)} className="bg-blue-500 text-white px-6 py-3 rounded-lg">Next</button>
+      <button
+        onClick={() => setStep(1)}
+        className="px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-blue-600"
+      >
+        <ArrowLeft size={18} /> Back
+      </button>
+      <button
+        onClick={() => setStep(3)}
+        className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:opacity-90 flex items-center gap-2"
+      >
+        Next <ArrowRight size={18} />
+      </button>
     </div>
-  </motion.div>
+  </div>
 )}
 
 
-          {/* Step 4: Phone Verification */}
+          {step === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Your Location</h2>
+              <select name="location" value={formData.location} onChange={handleChange} className="w-full px-4 py-3 mb-6 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                <option value="">Select city...</option>
+                {LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+              </select>
+              <div className="flex justify-between">
+                <button onClick={() => setStep(2)} className="px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-blue-600"><ArrowLeft size={18}/> Back</button>
+                <button onClick={() => setStep(4)} className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:opacity-90 flex items-center gap-2">Next <ArrowRight size={18}/></button>
+              </div>
+            </div>
+          )}
+
           {step === 4 && (
-            <motion.div key="step4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div>
               <h2 className="text-2xl font-bold mb-4">Phone Verification</h2>
-              <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 mb-2 rounded-lg border"/>
+              <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 mb-3 rounded-lg border focus:ring-2 focus:ring-blue-500"/>
               <div className="flex gap-2 mb-4">
-                <button onClick={sendOTP} disabled={loading} className="bg-blue-500 text-white px-4 py-2 rounded-lg flex-1">{loading ? "Sending..." : "Send OTP"}</button>
-                <input type="text" name="otp" placeholder="OTP" value={formData.otp} onChange={handleChange} className="flex-1 px-4 py-3 rounded-lg border"/>
+                <button onClick={sendOTP} disabled={loading} className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg">{loading ? "Sending..." : "Send OTP"}</button>
+                <input type="text" name="otp" placeholder="Enter OTP" value={formData.otp} onChange={handleChange} className="flex-1 px-4 py-2 rounded-lg border"/>
                 <button onClick={verifyOTP} disabled={loading} className="bg-green-500 text-white px-4 py-2 rounded-lg">{loading ? "Verifying..." : "Verify"}</button>
               </div>
-              <button onClick={() => setStep(3)} className="flex items-center gap-2">Back</button>
-            </motion.div>
+              <button onClick={() => setStep(3)} className="px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-blue-600"><ArrowLeft size={18}/> Back</button>
+            </div>
           )}
 
-          {/* Step 5: Document Upload */}
           {step === 5 && (
-            <motion.div key="step5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-2xl font-bold mb-4">Upload Documents</h2>
-              <input type="file" name="photo" onChange={handleFileChange} className="mb-2"/>
-              <input type="file" name="aadhaar" onChange={handleFileChange} className="mb-2"/>
-              <input type="file" name="pancard" onChange={handleFileChange} className="mb-2"/>
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Upload Documents</h2>
+              {["photo", "aadhaar", "pancard"].map((doc) => (
+                <label key={doc} className="flex items-center justify-between border rounded-lg p-3 mb-3 cursor-pointer hover:border-blue-400 transition">
+                  <span className="capitalize">{doc}</span>
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <UploadCloud size={18}/> <span>{formData.documents[doc]?.name || "Choose file"}</span>
+                  </div>
+                  <input type="file" name={doc} onChange={handleFileChange} hidden/>
+                </label>
+              ))}
               <div className="flex justify-between">
-                <button onClick={() => setStep(4)} className="flex items-center gap-2">Back</button>
-                <button onClick={submitDocuments} className="bg-blue-500 text-white px-6 py-3 rounded-lg">Next</button>
+                <button onClick={() => setStep(4)} className="px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-blue-600"><ArrowLeft size={18}/> Back</button>
+                <button onClick={submitDocuments} className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:opacity-90">Next</button>
               </div>
-            </motion.div>
+            </div>
           )}
 
-          {/* Step 6: Membership Payment */}
           {step === 6 && (
-            <motion.div key="step6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-2xl font-bold mb-4">Membership Payment</h2>
-              <button onClick={handlePayment} className="bg-green-500 text-white px-6 py-3 rounded-lg">Pay & Access</button>
-              <button onClick={() => setStep(5)} className="flex items-center gap-2 mt-2">Back</button>
-            </motion.div>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-6">Membership Payment</h2>
+              <button onClick={handlePayment} className="px-8 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:opacity-90">Pay & Continue</button>
+              <div className="mt-3">
+                <button onClick={() => setStep(5)} className="px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-blue-600 mx-auto"><ArrowLeft size={18}/> Back</button>
+              </div>
+            </div>
           )}
 
-          {/* Step 7: Done */}
           {step === 7 && (
-            <motion.div key="step7" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-              <CheckCircle2 size={80} className="mx-auto text-green-400 mb-4"/>
-              <h2 className="text-2xl font-bold text-center">Success!</h2>
-              <p className="text-center mt-2">You are now a verified service provider.</p>
+            <motion.div key="done" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
+              <CheckCircle2 size={80} className="mx-auto text-green-500 mb-4"/>
+              <h2 className="text-2xl font-bold">Success!</h2>
+              <p className="text-gray-600 mt-2">You are now a verified service provider 🎉</p>
+              <button onClick={() => navigate("/dashboard")} className="mt-6 px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg hover:opacity-90">Go to Home</button>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      
-        {/* Back Button */}
-        <div className="fixed bottom-8 w-full flex justify-center z-50">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow-lg hover:scale-105 transform transition-all duration-300"
-          >
-            ← Back
-          </button>
-        </div>
-
+      </motion.div>
     </div>
+    
   );
 }

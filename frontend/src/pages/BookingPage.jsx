@@ -14,6 +14,7 @@ import {
   Sunset,
   Moon,
   IndianRupee,
+  Timer,
 } from "lucide-react";
 
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
@@ -63,7 +64,7 @@ useEffect(() => {
     }
 
     const bookingData = {
-      workerId: worker._id, // ✅ must be MongoDB ObjectId string
+      workerId: worker._id || worker.id, // ✅ must be MongoDB ObjectId string
       workerName: worker.name,
       issue: selectedIssue.label,
       price: selectedIssue.price,
@@ -78,7 +79,7 @@ useEffect(() => {
 
       try {
         await axios.post("http://localhost:5000/api/notifications", {
-          workerId: worker._id,
+          workerId: worker._id || worker.id,
           message: `New booking from ${userName} for ${selectedIssue.label} at ${timeSlot}`,
         });
       } catch (err) {
@@ -157,6 +158,12 @@ useEffect(() => {
     <div className="flex items-center gap-2 mt-4 text-white/80 md:text-2xl">
       <MapPin className="w-5 h-5" />
       <span>{worker.location}</span>
+    </div>
+
+    {/* Location */}
+    <div className="flex items-center gap-2 mt-4 text-white/80 md:text-xl">
+      <Timer className="w-5 h-5" />
+      <span>{worker.experience}</span>
     </div>
 
     {/* Rating */}

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const providerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   service: { type: String, required: true },
+  experience: { type: String, required: true },
   location: { type: String, required: true },
   phone: { type: String, required: true },
   documents: {

@@ -5,7 +5,7 @@ import LoginRegister from "./pages/LoginRegister";
 import Dashboard from "./pages/Dashboard";
 import Headersection from "./components/Header";
 import Hero from "./components/Hero";
-import Mapsection from "./components/Mapsection";
+// import Mapsection from "./components/Mapsection";
 import Servicecategories from "./components/ServiceCategories";
 import Footer from "./components/Footer";
 import ServicesPage from "./components/Servicepage";
@@ -155,7 +155,7 @@ function App() {
                 <section id="servicepage">
                   <ServicesPage />
                 </section>
-                <Mapsection />
+                {/* <Mapsection /> */}
                 <Footer />
               </ProtectedLayout>
             }

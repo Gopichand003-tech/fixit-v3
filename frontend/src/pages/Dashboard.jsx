@@ -2,7 +2,7 @@ import React from "react";
 import Headersection from "../components/Header";
 import Herosection from "../components/Hero";
 import ServiceCategories from "../components/ServiceCategories";
-import MapSection from "../components/Mapsection";
+// import MapSection from "../components/Mapsection";
 import Footer from "../components/Footer";
 import ServicesPage from "../components/Servicepage";
 
@@ -15,7 +15,7 @@ export default function Dashboard() {
         <Herosection />
         <ServiceCategories />
         <ServicesPage/>
-        <MapSection/>
+        {/* <MapSection/> */}
         <Footer/>
       </div>
     </div>

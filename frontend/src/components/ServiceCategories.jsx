@@ -26,7 +26,7 @@ const services = [
   { icon: Car, name: "Mechanic", count: "67+ providers", category: "Auto-Repair", color: "from-red-500 to-red-600" },
   { icon: Home, name: "Cleaning", count: "200+ providers", category: "Home", color: "from-green-500 to-green-600" },
   { icon: Scissors, name: "Landscaping", count: "78+ providers", category: "Outdoor", color: "from-emerald-500 to-emerald-600" },
-  { icon: Laptop, name: "Tech Support", count: "134+ providers", category: "Tech", color: "from-indigo-500 to-indigo-600" },
+  { icon: Laptop, name: "TechSupport", count: "134+ providers", category: "Tech", color: "from-indigo-500 to-indigo-600" },
   { icon: Camera, name: "Photography", count: "56+ providers", category: "Creative", color: "from-pink-500 to-pink-600" },
   { icon: Hammer, name: "Carpenter", count: "43+ providers", category: "Home", color: "from-orange-500 to-orange-600" },
   { icon: Trash2, name: "Junk Removal", count: "88+ providers", category: "Home", color: "from-gray-500 to-gray-600" },

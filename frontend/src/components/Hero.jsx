@@ -1,9 +1,71 @@
 import { useState } from "react";
 import { MapPin, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { serviceWorkers } from "../data/Serviceworkers"; // ✅ use worker data
 
 const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
+  const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const navigate = useNavigate();
+
+  // Extract unique professions & locations and enrich with more
+  const professions = [
+    ...new Set(serviceWorkers.map((w) => w.profession)),
+    
+  "Electronics",
+  "Plumbing",
+  "Painting",
+  "Electrician",
+  "Mechanic",
+  "Cleaning",
+  "Landscaping",
+  "TechSupport",
+  "Photography",
+  "Carpenter",
+  "Junk Removal",
+  "Bodycare",
+  "Catering",
+  "Fitness Trainer",
+  "MusicTeacher",
+  "Tutoring",
+  "Personal Shopper",
+  "Business Consulting",
+  "Healthcare",
+  "Babysitting",
+  "Pet Care",
+  "AC Repair",
+  "Event Planning",
+  "Transport Service",
+  "Industrial Services"
+];
+
+
+  const locations = [
+    ...new Set(serviceWorkers.map((w) => w.location)),
+    "Visakhapatnam",
+  "Vijayawada",
+  "Guntur",
+  "Nellore",
+  "Tirupati",
+  "Kurnool",
+  "Rajahmundry",
+  "Kakinada",
+  "Anantapur",
+  "Kadapa",
+  "Ongole",
+  "Eluru",
+  "Vizianagaram",
+  "Machilipatnam",
+  "Chittoor",
+  "Hindupur",
+  "Proddatur",
+  "Tenali",
+  "Adoni",
+  "Nandyal",
+  "Mangalagiri"
+  ];
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -14,45 +76,21 @@ const Hero = () => {
       alert("Please enter your location");
       return;
     }
-    alert(`Searching for ${searchQuery} providers near ${location}...`);
-    const section = document.getElementById("providers-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation(
-            `${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`
-          );
-          alert("Location detected successfully!");
-        },
-        () => {
-          alert("Unable to detect location. Please enter manually.");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
+    navigate("/workers", {
+      state: { profession: searchQuery.trim(), location: location.trim() },
+    });
   };
 
   return (
-    <section
-      className="relative h-screen flex items-center justify-center overflow-hidden 
-                 ml-[-50vw] left-[50%] w-screen"
-    >
-      {/* Animated Gradient Background */}
+    <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden 
+                        ml-[-50vw] left-[50%] w-screen">
+      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-700 via-indigo-500 to-yellow-400 animate-[bgFlow_18s_ease_infinite] z-0" />
-
-      {/* Radial Grid Pattern Overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:40px_40px] pointer-events-none z-10" />
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="relative z-20 w-full max-w-7xl px-6 md:px-12 text-center flex flex-col items-center">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6">
           Find Local
           <br />
           <span className="bg-gradient-to-r from-yellow-300 to-yellow-100 bg-clip-text text-transparent">
@@ -60,13 +98,8 @@ const Hero = () => {
           </span>
         </h1>
 
-        <p className="text-lg md:text-2xl text-white/90 mb-10 max-w-3xl">
-          Trusted professionals for all your home and business needs.
-          From plumbing to painting, we've got you covered.
-        </p>
-
         {/* Search Bar */}
-        <div className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-lg">
+        <div className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-lg relative">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Service Input */}
             <div className="flex-1 relative">
@@ -76,26 +109,66 @@ const Hero = () => {
                 placeholder="What service do you need?"
                 className="pl-12 pr-4 h-14 w-full bg-white/20 border border-white/30 text-white placeholder:text-white/70 text-lg rounded-lg focus:outline-none"
                 value={searchQuery}
+                onFocus={() => setShowServiceSuggestions(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
+              {/* Service Suggestions */}
+              {showServiceSuggestions && (
+                <ul className="absolute top-16 left-0 w-full bg-white text-black rounded-lg shadow-md max-h-48 overflow-y-auto z-50">
+                  {professions
+                    .filter((p) =>
+                      p.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((p, idx) => (
+                      <li
+                        key={idx}
+                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                        onClick={() => {
+                          setSearchQuery(p);
+                          setShowServiceSuggestions(false);
+                        }}
+                      >
+                        {p}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
 
             {/* Location Input */}
             <div className="flex-1 relative">
-              <MapPin
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors cursor-pointer"
-                onClick={getCurrentLocation}
-                title="Use current location"
-              />
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 h-5 w-5" />
               <input
                 type="text"
                 placeholder="Enter your location"
                 className="pl-12 pr-4 h-14 w-full bg-white/20 border border-white/30 text-white placeholder:text-white/70 text-lg rounded-lg focus:outline-none"
                 value={location}
+                onFocus={() => setShowLocationSuggestions(true)}
                 onChange={(e) => setLocation(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
+              {/* Location Suggestions */}
+              {showLocationSuggestions && (
+                <ul className="absolute top-16 left-0 w-full bg-white text-black rounded-lg shadow-md max-h-48 overflow-y-auto z-50">
+                  {locations
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(location.toLowerCase())
+                    )
+                    .map((loc, idx) => (
+                      <li
+                        key={idx}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setLocation(loc);
+                          setShowLocationSuggestions(false);
+                        }}
+                      >
+                        {loc}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
 
             {/* Search Button */}
@@ -108,22 +181,13 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Trust Indicators */}
-        <div className="mt-10 flex flex-wrap justify-center items-center gap-6 text-white/80 text-sm sm:text-base">
-          {["1000+ Verified Providers", "24/7 Customer Support", "Instant Booking"].map(
-            (text, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-green-400 rounded-full" />
-                <span>{text}</span>
-              </div>
-            )
-          )}
-        </div>
+        {/* Description under search bar */}
+        <p className="mt-6 text-lg md:text-xl text-white/90 max-w-3xl">
+          Easily connect with trusted local professionals near you.  
+          From fixing leaky taps to electrical repairs, painting, carpentry, and more — 
+          all services are just a search away.
+        </p>
       </div>
-
-      {/* Floating Glow Effects */}
-      <div className="absolute top-10 left-10 w-24 h-24 bg-white/10 rounded-full blur-2xl animate-pulse" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 bg-yellow-300/20 rounded-full blur-2xl animate-pulse delay-1000" />
     </section>
   );
 };

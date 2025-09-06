@@ -98,7 +98,8 @@ const UpdateProfile = () => {
   </div>
 
   {/* Profile Card */}
-  <div className="relative z-10 w-full max-w-md bg-white/50 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 flex flex-col items-center">
+  <div className="relative z-10 w-full max-w-md bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-200 dark:from-gray-800 dark:to-gray-900
+ backdrop-blur-xl rounded-3xl shadow-2xl p-8 flex flex-col items-center">
     {/* Profile Picture */}
     <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-purple-500 shadow-lg mb-4 cursor-pointer hover:scale-105 transition-transform">
       <img
