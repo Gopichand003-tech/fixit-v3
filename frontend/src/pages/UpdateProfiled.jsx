@@ -62,6 +62,7 @@ const UpdateProfile = () => {
       );
 
       updateUser(res.data); // update AuthContext immediately
+      localStorage.setItem("user", JSON.stringify(res.data));
 
       // ✅ update preview if new image path comes from backend
       if (res.data.profilePic) {

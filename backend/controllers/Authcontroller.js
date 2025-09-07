@@ -303,10 +303,12 @@ export const updateProfile = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
-    return res.json({
-      message: 'Profile updated successfully',
-      user: publicUser(req, updatedUser),
-    });
+    // return res.json({
+    //   message: 'Profile updated successfully',
+    //   user: publicUser(req, updatedUser),
+    // });
+    return res.json(publicUser(req, updatedUser));
+
   } catch (err) {
     console.error('updateProfile error:', err);
     return res.status(500).json({ message: 'Profile update failed' });
