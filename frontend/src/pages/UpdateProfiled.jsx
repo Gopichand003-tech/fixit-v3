@@ -51,7 +51,7 @@ const UpdateProfile = () => {
       if (profilePicFile) data.append("profilePic", profilePicFile); // ✅ match backend
 
       const res = await axios.put(
-        "http://localhost:5000/api/auth/update-profile",
+        `${process.env.REACT_APP_API_URL}/api/auth/update-profile`,
         data,
         {
           headers: {
@@ -80,7 +80,7 @@ const UpdateProfile = () => {
   const profilePicUrl = profilePicPreview
     ? profilePicPreview.startsWith("http") || profilePicPreview.startsWith("data:")
       ? profilePicPreview
-      : `http://localhost:5000/${profilePicPreview}`
+      : `${process.env.REACT_APP_API_URL}/${profilePicPreview}`
     : "https://via.placeholder.com/150";
 
   return (

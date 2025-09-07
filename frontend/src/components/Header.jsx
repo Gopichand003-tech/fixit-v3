@@ -90,7 +90,7 @@ const Header = () => {
   };
 const handleNotificationClick = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/notifications"); // adjust URL if needed
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/notifications`); // adjust URL if needed
     const notifications = res.data;
 
     if (notifications.length > 0) {

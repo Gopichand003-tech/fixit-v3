@@ -116,7 +116,7 @@ const WorkerList = () => {
   const API_BASE =
     import.meta.env.VITE_API_URL ||
     (typeof process !== "undefined" && process.env.REACT_APP_API_URL) ||
-    "http://localhost:5000";
+    process.env.REACT_APP_API_URL;
 
   // ---------- FETCH providers from backend ----------
   useEffect(() => {

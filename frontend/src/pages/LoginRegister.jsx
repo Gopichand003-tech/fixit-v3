@@ -36,7 +36,7 @@ export default function LoginRegister() {
         : { email: formData.email, password: formData.password };
 
       const response = await axios.post(
-        `http://localhost:5000/api/auth${endpoint}`,
+        `${process.env.REACT_APP_API_URL}/api/auth${endpoint}`,
         payload
       );
 
@@ -60,7 +60,7 @@ export default function LoginRegister() {
   // Google login
   const handleGoogleLogin = async (credentialResponse) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/google", {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/google`, {
         token: credentialResponse.credential,
       });
 
