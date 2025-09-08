@@ -9,12 +9,22 @@ import providerRoute from "./routes/pro-route.js";
 import testimonialRoutes from "./routes/Testimonials.js";
 import bookingsRoutes from "./routes/bookings.js";
 import notificationsRoutes from "./routes/notifications.js";
-
 import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
-const app = express();
+// Middleware
+app.use(express.json());
+
+app.use(cors({
+  origin: [
+    "https://fixit-v3.vercel.app",  // ✅ Vercel frontend
+    "http://localhost:3000"         // ✅ for local dev
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

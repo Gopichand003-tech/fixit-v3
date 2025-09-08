@@ -59,12 +59,12 @@ export const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ message: 'Google token missing' });
-    if (!process.env.GOOGLE_CLIENT_ID)
+    if (!process.env.REACT_APP_GOOGLE_CLIENT_ID)
       return res.status(500).json({ message: 'Missing GOOGLE_CLIENT_ID' });
 
     const ticket = await googleClient.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.REACT_APP_GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
