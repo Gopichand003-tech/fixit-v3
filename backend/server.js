@@ -22,13 +22,15 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://fixit-v3.vercel.app", // ✅ Vercel frontend
-      "http://localhost:3000",       // ✅ Local dev
+      "https://fixit-v3.vercel.app",  // old frontend
+      "https://fixit-dun.vercel.app", // new frontend ✅
+      "http://localhost:3000",        // local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
