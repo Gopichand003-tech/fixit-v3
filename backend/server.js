@@ -23,7 +23,7 @@ app.use(
   cors({
     origin: [
       "https://fixit-v3.vercel.app",  // old frontend
-      "https://fixit-dun.vercel.app", // new frontend ✅
+      "https://fixit-chi.vercel.app", // new frontend ✅
       "http://localhost:3000",        // local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
